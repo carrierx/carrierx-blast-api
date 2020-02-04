@@ -1,0 +1,67 @@
+# URLS
+
+# The Public URL for your service CarrierX will use to control the calls via FlexML
+BASE_CALLCONTROL_API_URL = f'{PROTOCOL}://{HOST}:{PORT}/api/v1/call-control'
+# The URL of the CarrierX API
+BASE_CARRIERX_API_URL = 'https://api.carrierx.com/'
+
+# API credentials
+CARRIERX_API_TOKEN = ''
+FLEXML_API_USER = ''
+FLEXML_API_PASSWORD = ''
+
+# Answering Machine Detection (values in milliseconds)
+AMD_INITIAL_SILENCE = "5000"
+AMD_GREETING = "2000"
+AMD_AFTER_GREETING_SILENCE = "500"
+AMD_TOTAL_ANALYSIS_TIME = "10000"
+
+# Prerecorded voice menu
+
+VOICE_MENU = {"no_key_pressed": "http://path/to/No_key_pressed.wav",
+              "goodbye": "http://path/to/Goodbye.wav",
+              "invalid_entry": "http://path/to/Invalid_entry.wav",
+              "opt_out": "http://path/to/Opt_out.wav",
+              "ready_for_delivery": "http://path/to/Ready_for_delivery.wav",
+              "record_verification": "http://path/to/Record_verification.wav",
+              "record_welcome": "http://path/to/Record_welcome.wav",
+              "recording_cancelled": "http://path/to/Recording_cancelled.wav",
+              "recording_saved": "http://path/to/Recording_saved.wav",
+              "start_recording": "http://path/to/Start_recording.wav"}
+
+# CarrierX Did, that is used for calling the user and recipients
+DID = 'CarrierX DID to place recording calls from'
+
+# Number of calls to place with the CarrierX API per second
+MAX_CALLS_PER_SECOND = 25
+
+# Number of calls to place with the same delay
+CALL_BATCH_SIZE = 50
+
+# Ratio of call duration / recording duration
+CALL_LENGTH_RATIO = 1.5
+
+# Timeout in seconds for all calls for a message to complete (seconds)
+MESSAGE_TIMEOUT = 300
+
+# Window in hours that the system will check messages that have timed out to see if they have completed
+MESSAGE_TIMEOUT_CHECK_WINDOW = 12
+
+# Maximum number of times to retry a failed call
+MAX_RETRIES = 3
+
+# Debug recordings, enable/configure to record all calls for debugging. 
+# Debug recordings for a TTL of 3 days, and are automatically deleted after that by CarrierX.
+RECORD_ALL_CALLS = False 
+DEBUG_RECORDING_CONTAINER = 'CarrierX container SID for storing call recordings'
+
+# Timeouts for recording calls (values in seconds)
+REC_CALL_STATUS_TIMEOUTS = {
+    "NO_REC_CALL": None,
+    "PLACED": 300,
+    "USER_ANSWERED": 15,
+    "PRESSED_STAR": 600,
+    "RECORDED": 600,
+    "CONFIRMED": None,
+    "CARRIERX_ERROR": None
+}

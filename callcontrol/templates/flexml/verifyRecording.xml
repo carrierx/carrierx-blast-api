@@ -1,0 +1,11 @@
+<Response>
+    {% if reprompt %}
+        <Play>{{ voice_menu.invalid_entry }}</Play>
+    {% endif %}
+    <Gather timeout="10" numDigits="1" finishOnKey="_" method="post"
+            action="/api/v1/call-control/verify/gather/{{ message_id }}">
+        <Play>{{ voice_menu.record_verification }}</Play>
+    </Gather>
+    <Play>{{ voice_menu.no_key_pressed }}</Play>
+    <Hangup/>
+</Response>

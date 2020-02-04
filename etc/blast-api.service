@@ -1,0 +1,29 @@
+[Unit]
+Description=Simple Blast API
+
+[Service]
+ExecStart=/opt/blast-api/env/bin/uwsgi                          \
+           --http=0.0.0.0:8001                                  \
+           --stats :8002                                        \
+           --stats-http                                         \
+           --memory-report                                      \
+           --chdir=/opt/blast-api                               \
+           --enable-threads                                     \
+           --virtualenv=/opt/blast-api/env                      \
+           --manage-script-name                                 \
+           --wsgi-file /opt/blast-api/blast_api_project/wsgi.py \
+           --static-map /static/=/opt/blast-api/static          \
+           --processes=8                                        \
+           --master                                             \
+           --pidfile=/var/run/blast-api.pid                     \
+           --die-on-term                                        \
+           --logto /var/log/blast-api.log                       \
+           --socket-timeout=900                                 \
+           --http-timeout=900                                   \
+           --logformat '%(addr) (%(user) %(uagent)) [%(ctime)] %(method) %(uri) => generated %(rsize) bytes in %(msecs) msecs (%(proto) %(status)) %(headers) headers in %(hsize) bytes (%(switches) switches on core %(core)) request body %(cl) bytes {address space usage: %(vszM)MB} {rss usage: %(rssM)MB} [pid: %(pid)]' \
+           -b 65535
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

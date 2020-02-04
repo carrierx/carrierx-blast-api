@@ -1,0 +1,19 @@
+<Response>
+  {% if record_call %}
+    <Record containerSid="{{ container_sid }}"
+    recordSession="true"
+    lifecycleAction="delete"
+    lifecycleTtl="259200"
+    stringKey1="{{ message_id }}"
+    stringKey2="record"
+    trim="do-not-trim"/>
+  {% endif %}
+  {% if reprompt %}
+  <Play>{{ voice_menu.invalid_entry }}</Play>
+  {% endif %}
+  <Gather timeout="10" numDigits="1" finishOnKey="_" method="post" action="/api/v1/call-control/record/gather/{{ message_id }}">
+    <Play>{{ voice_menu.record_welcome }}</Play>
+  </Gather>
+  <Play>{{ voice_menu.no_key_pressed }}</Play>
+  <Hangup/>
+</Response>

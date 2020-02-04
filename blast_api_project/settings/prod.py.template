@@ -1,0 +1,48 @@
+from .base import *
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+
+# django Environment settings
+ALLOWED_HOSTS = []
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = ''
+
+#See https://docs.djangoproject.com/en/2.1/ref/databases/#id11
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'xe',
+        'USER': 'a_user',
+        'PASSWORD': 'a_password',
+        'HOST': '',
+        'PORT': ''
+    }
+}
+
+# Logging configuration
+BDR_LOG_PATH = '/var/log/bdr.log'
+CDR_LOG_PATH = '/var/log/cdr.log'
+REC_CDR_LOG_PATH = '/var/log/rec_cdr.log'
+
+LOGGING["handlers"].update({
+    'cdr_file': {
+        'level': 'INFO',
+        'class': 'logging.handlers.WatchedFileHandler',
+        'filename': CDR_LOG_PATH,
+    },
+    'bdr_file': {
+        'level': 'INFO',
+        'class': 'logging.handlers.WatchedFileHandler',
+        'filename': BDR_LOG_PATH,
+    },
+    'rec_cdr_file': {
+        'level': 'INFO',
+        'class': 'logging.handlers.WatchedFileHandler',
+        'filename': REC_CDR_LOG_PATH,
+    }
+})

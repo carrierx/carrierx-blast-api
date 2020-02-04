@@ -1,0 +1,8 @@
+<Response>
+    <Play>{{ voice_menu.recording_cancelled }}</Play>
+    <Play>{{ voice_menu.goodby }}</Play>
+    {% if app_error %}
+        <Say voice="woman">A Simple Blast error has occured</Say>
+    {% endif %}
+    <Hangup/>
+</Response>

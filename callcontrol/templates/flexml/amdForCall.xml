@@ -1,0 +1,16 @@
+<Response>
+  {% if record_call %}
+    <Record containerSid="{{ container_sid }}"
+    recordSession="true"
+    lifecycleAction="delete"
+    lifecycleTtl="259200"
+    stringKey1="{{ call_id }}"
+    trim="do-not-trim"/>
+  {% endif %}
+  <AMD action="/api/v1/call-control/message/amd/{{ call_id }}"
+  method="POST"
+  initialSilence="{{ initial_silence }}"
+  greeting="{{ greeting }}"
+  afterGreetingSilence="{{ after_greeting_silence }}"
+  totalAnalysisTime="{{ total_analysis_time }}" />
+</Response>

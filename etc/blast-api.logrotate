@@ -1,0 +1,43 @@
+/var/log/blast-api.log {
+        daily
+        dateext
+        missingok
+        rotate 30
+        compress
+        copytruncate
+}
+
+/var/log/blast-api-message-check.log {
+        daily
+        dateext
+        missingok
+        rotate 30
+        compress
+        copytruncate
+}
+
+/var/log/bdr.log {
+        daily
+        dateext
+        missingok
+        rotate 30
+        compress
+        copytruncate
+}
+
+/var/log/cdr.log {
+        daily
+        dateext
+        missingok
+        rotate 30
+        compress
+        copytruncate
+}
+/var/log/rec_cdr.log {
+        daily
+        dateext
+        missingok
+        rotate 30
+        compress
+        copytruncate
+}

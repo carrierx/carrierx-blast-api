@@ -1,0 +1,17 @@
+<Response>
+  {% if wait_for_silence > 0 %}
+    <wait length="60" silence="true" minsilence="2000"/>
+  {% endif %}
+  <Gather timeout="10" finishOnKey="_" method="post" action="/api/v1/call-control/call/gather/{{ call_id }}">
+    <Play>
+      {{ recording_url }}
+    </Play>
+    {% if play_twice %}
+    <Pause length="1"/>
+    <Play>
+      {{ recording_url }}
+    </Play>
+    {% endif %}
+  </Gather>
+  <Hangup/>
+</Response>

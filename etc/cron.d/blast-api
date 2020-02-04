@@ -1,0 +1,2 @@
+# Run the blast-api cron jobs
+* * * * * root flock -n /var/run/blast-api-cron.lock /opt/blast-api/blast_api_project/check_message_statuses.sh >> /var/log/blast-api-message-check.log 2>&1

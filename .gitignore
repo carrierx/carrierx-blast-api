@@ -1,0 +1,11 @@
+.vscode
+env
+__pycache__
+db.sqlite3
+env
+blast_api_project/settings/prod.py
+blast_api_project/configuration.py
+blast_api_project/qa-configuration.py
+blast_api_project/settings/qa.py
+blast_api_project/prod-configuration.py
+blast_api_project/check_message_statuses_dev.sh

@@ -1,0 +1,15 @@
+<Response>
+    <Play>{{ voice_menu.start_recording }}</Play>
+    <Record direction="out"
+            lifecycleAction="delete"
+            lifecycleTtl="86400"
+            {{ place.type }}Sid="{{ place.sid }}"
+            fileMode="overwrite"
+            playBeep="true"
+            finishOnKey="#"
+            trim="do-not-trim"
+            action="/api/v1/call-control/record/verify/{{ message_id }}"
+            method="POST"
+            errorAction="/api/v1/call-control/record/error/{{ message_id }}"
+            errorMethod="POST"/>
+</Response>

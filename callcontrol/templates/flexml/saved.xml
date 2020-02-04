@@ -1,0 +1,6 @@
+<Response>
+  <Play>{{ voice_menu.recording_saved }}</Play>
+  <Play>{{ voice_menu.ready_for_delivery }}</Play>
+  <Play>{{ voice_menu.goodbye }}</Play>
+  <Hangup/>
+</Response>
