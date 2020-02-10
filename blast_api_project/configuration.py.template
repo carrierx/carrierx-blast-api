@@ -10,6 +10,9 @@ CARRIERX_API_TOKEN = ''
 FLEXML_API_USER = ''
 FLEXML_API_PASSWORD = ''
 
+# Pattern for checking numbers
+VALID_NUMBER_PATTERN = '^1([2-9][0-9]{2})([2-9](?!11)[0-9]{2})([0-9]{4})$'
+
 # Answering Machine Detection (values in milliseconds)
 AMD_INITIAL_SILENCE = "5000"
 AMD_GREETING = "2000"

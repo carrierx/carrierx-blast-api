@@ -2,10 +2,12 @@ import logging
 from datetime import datetime, timezone, timedelta
 import time
 import requests
+import re
 from django.db import models, connection
 
 from blast_api_project.utils import serialize_one, DjangoStatusArchiver
 from blast_api_project import configuration, utils
+from callcontrol import constants
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -194,6 +196,11 @@ class Call(models.Model):
     q850 = models.IntegerField(default=0)
     num_retries = models.IntegerField(default=0)
 
+    valid_number_pattern = re.compile(configuration.VALID_NUMBER_PATTERN)
+
+    def number_is_valid(self):
+        return self.valid_number_pattern.match(f'{self.to_number}') is not None
+
     def cancel(self):
         if self.status not in ("completed", "failed", "no-answer", "cancelled"):
             if self.sid:
@@ -207,60 +214,69 @@ class Call(models.Model):
             logger.warning('The call %i has already reached its terminal state, cannot cancel', self.id)
 
     def start(self, offset=0, retry=False):
-        if retry:
-            self.status = "ready"
-        if self.status != "ready":
-            logging.error(f"This call {self.id} cannot be started because it is not ready")
-            return
-        delay = 0
-        status = 'ongoing'
-        if self.message.schedule or retry:
-            now = datetime.now(timezone.utc)
+        if self.number_is_valid():
+            if retry:
+                self.status = "ready"
+            if self.status != "ready":
+                logging.error(f"This call {self.id} cannot be started because it is not ready")
+                return
+            delay = 0
+            status = 'ongoing'
+            if self.message.schedule or retry:
+                now = datetime.now(timezone.utc)
+                if self.message.schedule:
+                    calculated_delay = (self.message.schedule - now).total_seconds() + offset
+                else:
+                    calculated_delay = offset
+                if calculated_delay > 0:
+                    delay = calculated_delay
+                    logger.info('Scheduling call in %is', delay)
+                    status = 'pending'
+
+            calling_did = self.message.caller
+            called_did = self.to_number
+            if calling_did == called_did:
+                calling_did, called_did = configuration.DID, calling_did
+            data = {
+                "calling_did": calling_did,
+                "called_did": called_did,
+                "delay": delay if delay > 0 else offset,
+                "url": f'{configuration.BASE_CALLCONTROL_API_URL}/message/send/{self.pk}',
+                'status_callback_url': f'{configuration.BASE_CALLCONTROL_API_URL}/call/status/{self.pk}'
+            }
+            self.status = status
+
+            logger.info('Posting this call to CarrierX %s "%s"', configuration.BASE_CARRIERX_API_URL, data)
             if self.message.schedule:
-                calculated_delay = (self.message.schedule - now).total_seconds() + offset
+                self.started = self.message.schedule + timedelta(seconds=offset)
             else:
-                calculated_delay = offset
-            if calculated_delay > 0:
-                delay = calculated_delay
-                logger.info('Scheduling call in %is', delay)
-                status = 'pending'
+                self.started = datetime.now(timezone.utc) + timedelta(seconds=offset)
 
-        calling_did = self.message.caller
-        called_did = self.to_number
-        if calling_did == called_did:
-            calling_did, called_did = configuration.DID, calling_did
-        data = {
-            "calling_did": calling_did,
-            "called_did": called_did,
-            "delay": delay if delay > 0 else offset,
-            "url": f'{configuration.BASE_CALLCONTROL_API_URL}/message/send/{self.pk}',
-            'status_callback_url': f'{configuration.BASE_CALLCONTROL_API_URL}/call/status/{self.pk}'
-        }
-        self.status = status
-
-        logger.info('Posting this call to CarrierX %s "%s"', configuration.BASE_CARRIERX_API_URL, data)
-        if self.message.schedule:
-            self.started = self.message.schedule + timedelta(seconds=offset)
+            response = requests.post(url=f'{configuration.BASE_CARRIERX_API_URL}/flexml/v1/calls',
+                                    json=data,
+                                    auth=(configuration.FLEXML_API_USER, configuration.FLEXML_API_PASSWORD))
+            logger.info("Calling -> %s", response.json())
+            response_dict = dict(response.json())
+            errors = response_dict.get("errors")
+            if errors:
+                self.status = "failed"
+                cdr_logger.info(serialize_one(self))
+                logging.error(f"This call could not be placed: {errors}")
+            else:
+                self.sid = response_dict.get("call_sid")
         else:
-            self.started = datetime.now(timezone.utc) + timedelta(seconds=offset)
-
-        response = requests.post(url=f'{configuration.BASE_CARRIERX_API_URL}/flexml/v1/calls',
-                                 json=data,
-                                 auth=(configuration.FLEXML_API_USER, configuration.FLEXML_API_PASSWORD))
-        logger.info("Calling -> %s", response.json())
-        response_dict = dict(response.json())
-        errors = response_dict.get("errors")
-        if errors:
             self.status = "failed"
+            self.started = datetime.now(timezone.utc)
+            self.finished = datetime.now(timezone.utc)
+            self.q850 = constants.CARRIERX_CALL_STATUS_TO_Q850.get('invalid-number', 1)
+
             cdr_logger.info(serialize_one(self))
-            logging.error(f"This call could not be placed: {errors}")
-        else:
-            self.sid = response_dict.get("call_sid")
+
         self.save()
 
     def retry(self, offset=0):
-        if self.status != 'failed':
-            logger.info(f"The call with id={self.id} status is not 'failed', skipping")
+        if self.status != 'failed' or not self.number_is_valid():
+            logger.info(f"The call with id={self.id} status is not 'failed' or the number is invalid, skipping")
             return
         if self.num_retries == configuration.MAX_RETRIES:
             self.status = 'failed'

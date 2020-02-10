@@ -86,6 +86,12 @@ FLEXML_API_USER = ''
 FLEXML_API_PASSWORD = ''
 ```
 
+### Number validation
+Regex for validating numbers before placing a call
+```py
+VALID_NUMBER_PATTERN = '^1([2-9][0-9]{2})([2-9](?!11)[0-9]{2})([0-9]{4})$'
+```
+
 ### Answering Machine Detection 
 For more about AMD see the [AMD documentation](https://www.carrierx.com/documentation/flexml-api#amd-experimental)  
 _Values in milliseconds_

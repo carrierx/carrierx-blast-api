@@ -50,7 +50,7 @@ def get_user_container(user_data: str) -> str:
     get_container_response = requests.get(url=f'{configuration.BASE_CARRIERX_API_URL}/core/v2/storage/containers',
                                           params={"filter": f"string_key_1 eq {user_data}"},
                                           headers = {"Authorization": f"Bearer {configuration.CARRIERX_API_TOKEN}"})
-    logger.info(get_contaiget_container_response.content)
+    logger.info(get_container_response.content)
     matching_containers = get_container_response.json()
     if matching_containers["count"]:
         container = matching_containers["items"][0]

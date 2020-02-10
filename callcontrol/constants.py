@@ -5,6 +5,7 @@ AMD_TO_Q850 = {"HUMAN": 0,      # No error
                "UNK": 127}      # Other failure
 
 CARRIERX_CALL_STATUS_TO_Q850 = {"completed": 0,
+                                "invalid-number": 1,
                                 "app-error": 127,
                                 "failed": 41,
                                 "no-answer": 18,
