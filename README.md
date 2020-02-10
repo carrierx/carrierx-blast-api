@@ -198,8 +198,17 @@ logrotate -d -f /etc/logrotate.d/blast-api.logrotate
 ```
 
 ## Systemd service
+Depending on your choice of app container, do one of the following
+
+### uWsgi
 ```bash
 cp etc/blast-api.service /etc/systemd/system
+systemctl enable blast-api
+```
+
+### Gunicorn
+```bash
+cp etc/blast-api-gunicorn.service /etc/systemd/system/blast-api.service
 systemctl enable blast-api
 ```
 
